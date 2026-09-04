@@ -56,7 +56,7 @@ docker compose up --build
 ./docker/verify.sh
 ```
 
-13 checks: the app serves (HTTP 200, SPA shell, JS/CSS bundles, route fallback), the app id is baked into the JS bundle, **the Base44 reverse proxy actually forwards `/api` POSTs to the real backend** (the 405-fix regression check), and the database restored completely (86 tables, all key modules' data, referential integrity). Expected output ends with: `Verification complete: 13 passed, 0 failed.`
+14 checks: deployment freshness (stale-image detection), the app serves (HTTP 200, SPA shell, JS/CSS bundles, route fallback), the app id is baked into the JS bundle, **the Base44 reverse proxy actually forwards `/api` POSTs to the real backend** (the 405-fix regression check), and the database restored completely (86 tables, all key modules' data, referential integrity). Expected output ends with: `Verification complete: 14 passed, 0 failed.`
 
 Verified during packaging (2026-09-04): `npm ci` + `vite build` succeed, production bundle serves correctly, signup/login requests through the reverse proxy reach the real Base44 backend (HTTP 400/200 with Base44 JSON — not 405), and `worknest.sql` restores cleanly (86 tables / 161 records, zero orphaned references).
 
@@ -81,7 +81,20 @@ Verified during packaging (2026-09-04): `npm ci` + `vite build` succeed, product
 **Fix:**
 - `docker/nginx.conf.template` now reverse-proxies `/api/` and `/ws-user-apps/` to the real Base44 backend (`https://app.base44.com` by default, configurable via `BASE44_BACKEND_URL` / `BASE44_BACKEND_HOST` env vars, rendered by nginx's envsubst entrypoint).
 - `docker/app.Dockerfile` bakes the real app id into the bundle via build args (`VITE_BASE44_APP_ID`, default `6a911feea78e049e1a1003f4`).
-- `docker/verify.sh` gained two regression checks: the app id must be present in the served JS bundle, and `POST /api/...` must be answered by the real Base44 backend (never 405).
+- `docker/verify.sh` gained regression checks: the app id must be present in the served JS bundle, `POST /api/...` must be answered by the real Base44 backend (never 405), and the running image must report itself as fixed via `/deploy-info.json`.
+- `docker/redeploy.sh` added: one command that pulls, force-rebuilds the app image (`--no-cache`), restarts the stack and runs verification. Use this to deploy updates.
+
+## Troubleshooting: still seeing 405 after pulling the fix?
+
+That means the container is still running the **old image**. `docker compose up -d` does **not** rebuild an image that already exists. Confirm in one line — open:
+
+    http://<your-server>:8080/deploy-info.json
+
+- JSON with `"api_reverse_proxy":true` → your container has the fix; if signup still fails, the problem is upstream of the container (check any proxy in front of it and capture the failing request in the browser devtools Network tab).
+- 404 / no JSON → **stale image**. Fix on the server:
+
+      git pull
+      ./docker/redeploy.sh
 
 **Verified end-to-end** against the real Base44 backend: signup requests through the fixed routing return the backend's own validation/success JSON (e.g. `Password must be at least 8 characters long`, then `200 Registration successful`) instead of `405 Method Not Allowed`.
 

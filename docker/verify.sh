@@ -36,7 +36,20 @@ curl -s "$APP_URL/$js" | grep -q "$BASE44_APP_ID" \
   && ok "app id baked into JS bundle ($BASE44_APP_ID)" \
   || bad "app id NOT found in JS bundle — rebuild with VITE_BASE44_APP_ID"
 
-echo "== 2. Base44 backend reverse proxy (the 405 signup fix) =="
+echo "== 2. Deployment freshness (stale-image detection) =="
+# deploy-info.json only exists in images built from the fixed Dockerfile.
+# If it is missing, an OLD image (pre-405-fix) is still running — the #1
+# cause of "still seeing 405 after pulling the fix". docker compose up -d
+# does not rebuild existing images; run docker/redeploy.sh.
+info=$(curl -s "$APP_URL/deploy-info.json")
+if echo "$info" | grep -q '"api_reverse_proxy":true'; then
+  ok "running image includes the 405 fix — $(echo "$info" | head -c 200)"
+else
+  bad "deploy-info.json missing => STALE IMAGE running (built before the 405 fix)."
+  bad "fix: git pull && docker/redeploy.sh   (or: docker compose build --no-cache app && docker compose up -d)"
+fi
+
+echo "== 3. Base44 backend reverse proxy (the 405 signup fix) =="
 # The frontend calls relative /api/... paths. The nginx reverse proxy must
 # forward them to the real Base44 backend — a static-only server answers
 # POST /api/... with 405 Method Not Allowed, which is exactly what broke
@@ -59,7 +72,7 @@ echo "$body" | grep -q "error_type\|access_token\|detail" \
   && ok "API responses come from the Base44 backend (JSON body, not SPA shell)" \
   || bad "API response is not Base44 JSON — got: $(echo "$body" | head -c 80)"
 
-echo "== 3. Database container =="
+echo "== 4. Database container =="
 tables=$(docker exec "$DB_CONTAINER" psql -U worknest -d worknest -tA \
   -c "SELECT COUNT(*) FROM pg_catalog.pg_tables WHERE schemaname='public'")
 [ "$tables" -ge 80 ] && ok "schema restored ($tables tables)" || bad "expected ~86 tables, got $tables"
@@ -76,7 +89,7 @@ total=$(docker exec "$DB_CONTAINER" psql -U worknest -d worknest -tA \
   -c 'SELECT COUNT(*) FROM "PayrollRun"')
 [ "$total" -ge 1 ] && ok "Payroll data restored ($total rows)" || bad "PayrollRun rows: $total"
 
-echo "== 4. Integrity =="
+echo "== 5. Integrity =="
 orphans=$(docker exec "$DB_CONTAINER" psql -U worknest -d worknest -tA \
   -c 'SELECT COUNT(*) FROM "Employee" e LEFT JOIN "Branch" b ON e.branch_id = b.id WHERE e.branch_id IS NOT NULL AND b.id IS NULL')
 [ "$orphans" = "0" ] && ok "no orphaned employee->branch references" || bad "$orphans orphaned references"

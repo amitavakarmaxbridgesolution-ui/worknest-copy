@@ -32,8 +32,20 @@ ARG BASE44_BACKEND_HOST=app.base44.com
 ENV BASE44_BACKEND_URL=${BASE44_BACKEND_URL} \
     BASE44_BACKEND_HOST=${BASE44_BACKEND_HOST}
 
+# Re-declared so the manifest below can record what this image was built for
+ARG VITE_BASE44_APP_ID=6a911feea78e049e1a1003f4
+ARG GIT_COMMIT=unknown
+ARG BUILD_DATE=unknown
+
 COPY docker/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
+
+# Build manifest — open http://<host>:8080/deploy-info.json to confirm the
+# running container was built from the fixed code (api_reverse_proxy: true).
+# Images built before the 405 fix have no deploy-info.json at all.
+RUN printf '{"image":"worknest-app","git_commit":"%s","built_at":"%s","base44_app_id":"%s","base44_backend_url":"%s","api_reverse_proxy":true,"fix":"405-signup-reverse-proxy"}' \
+    "$GIT_COMMIT" "$BUILD_DATE" "$VITE_BASE44_APP_ID" "$BASE44_BACKEND_URL" \
+    > /usr/share/nginx/html/deploy-info.json
 
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \

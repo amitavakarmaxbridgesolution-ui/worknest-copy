@@ -19,6 +19,8 @@ services:
         VITE_BASE44_APP_BASE_URL: ${BASE44_BACKEND_URL:-https://app.base44.com}
         BASE44_BACKEND_URL: ${BASE44_BACKEND_URL:-https://app.base44.com}
         BASE44_BACKEND_HOST: ${BASE44_BACKEND_HOST:-app.base44.com}
+        GIT_COMMIT: ${GIT_COMMIT:-unknown}
+        BUILD_DATE: ${BUILD_DATE:-unknown}
     image: worknest-app:latest
     container_name: worknest-app
     ports:
