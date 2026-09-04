@@ -1,0 +1,66 @@
+{
+  "name": "PulseSurvey",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "questions": {
+      "type": "string",
+      "description": "JSON array of questions"
+    },
+    "target_audience": {
+      "type": "string",
+      "enum": [
+        "all",
+        "branch",
+        "department"
+      ],
+      "default": "all"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "department_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "closed"
+      ],
+      "default": "draft"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

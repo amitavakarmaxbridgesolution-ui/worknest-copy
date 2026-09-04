@@ -1,0 +1,59 @@
+{
+  "name": "Dependent",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "relationship": {
+      "type": "string",
+      "enum": [
+        "spouse",
+        "child",
+        "parent",
+        "sibling",
+        "other"
+      ]
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "employee_email",
+    "name",
+    "relationship"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

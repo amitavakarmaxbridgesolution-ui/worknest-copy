@@ -1,0 +1,141 @@
+{
+  "name": "Employee",
+  "type": "object",
+  "properties": {
+    "employee_code": {
+      "type": "string"
+    },
+    "first_name": {
+      "type": "string"
+    },
+    "middle_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "preferred_name": {
+      "type": "string"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "gender": {
+      "type": "string",
+      "enum": [
+        "Male",
+        "Female",
+        "Other"
+      ]
+    },
+    "personal_email": {
+      "type": "string"
+    },
+    "work_email": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "emergency_contact": {
+      "type": "string"
+    },
+    "date_of_joining": {
+      "type": "string",
+      "format": "date"
+    },
+    "employment_status": {
+      "type": "string",
+      "enum": [
+        "Active",
+        "Onboarding",
+        "Resigned",
+        "Terminated"
+      ],
+      "default": "Active"
+    },
+    "employment_type": {
+      "type": "string",
+      "enum": [
+        "Full-time",
+        "Part-time",
+        "Contract",
+        "Intern"
+      ],
+      "default": "Full-time"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "Super Admin",
+        "HR Manager",
+        "Employee"
+      ],
+      "default": "Employee"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "department_id": {
+      "type": "string"
+    },
+    "team_id": {
+      "type": "string"
+    },
+    "designation_id": {
+      "type": "string"
+    },
+    "job_grade_id": {
+      "type": "string"
+    },
+    "manager_id": {
+      "type": "string"
+    },
+    "profile_photo": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "employee_code",
+    "first_name",
+    "last_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.work_email": "{{user.email}}"
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

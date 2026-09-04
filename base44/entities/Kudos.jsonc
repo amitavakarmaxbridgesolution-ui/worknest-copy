@@ -1,0 +1,43 @@
+{
+  "name": "Kudos",
+  "type": "object",
+  "properties": {
+    "from_email": {
+      "type": "string"
+    },
+    "to_email": {
+      "type": "string"
+    },
+    "to_name": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "value": {
+      "type": "string",
+      "enum": [
+        "teamwork",
+        "innovation",
+        "leadership",
+        "excellence",
+        "integrity"
+      ],
+      "default": "excellence"
+    }
+  },
+  "required": [
+    "from_email",
+    "to_email",
+    "message"
+  ],
+  "rls": {
+    "read": {},
+    "create": {},
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

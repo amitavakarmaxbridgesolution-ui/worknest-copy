@@ -1,0 +1,40 @@
+{
+  "name": "PollVote",
+  "type": "object",
+  "properties": {
+    "poll_id": {
+      "type": "string"
+    },
+    "employee_email": {
+      "type": "string"
+    },
+    "option_index": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "poll_id",
+    "employee_email",
+    "option_index"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

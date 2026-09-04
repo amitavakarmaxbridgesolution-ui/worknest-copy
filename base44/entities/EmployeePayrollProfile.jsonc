@@ -1,0 +1,60 @@
+{
+  "name": "EmployeePayrollProfile",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "salary_structure_id": {
+      "type": "string"
+    },
+    "ctc": {
+      "type": "number"
+    },
+    "basic": {
+      "type": "number"
+    },
+    "components": {
+      "type": "string"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "employee_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

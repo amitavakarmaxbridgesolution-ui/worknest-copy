@@ -1,0 +1,64 @@
+{
+  "name": "StatutoryConfig",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "PF",
+        "PT",
+        "TDS",
+        "Gratuity"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "config": {
+      "type": "string",
+      "description": "JSON of rule parameters (rates, slabs, thresholds)"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "version": {
+      "type": "number",
+      "default": 1
+    },
+    "config_source": {
+      "type": "string",
+      "description": "Reference to rule source (e.g. statute, amendment)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "category",
+    "name"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

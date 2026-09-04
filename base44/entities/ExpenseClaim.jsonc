@@ -1,0 +1,69 @@
+{
+  "name": "ExpenseClaim",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "category_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "total_amount": {
+      "type": "number"
+    },
+    "items": {
+      "type": "string"
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "submitted",
+        "approved",
+        "rejected",
+        "reimbursed"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "employee_email",
+    "title",
+    "total_amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

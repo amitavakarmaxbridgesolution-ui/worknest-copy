@@ -1,0 +1,72 @@
+{
+  "name": "CalendarEvent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "birthday",
+        "anniversary",
+        "joiner",
+        "training",
+        "leave",
+        "meeting",
+        "contract_end",
+        "probation_end",
+        "last_working_day",
+        "company_event"
+      ]
+    },
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "department_id": {
+      "type": "string"
+    },
+    "source_entity": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "date",
+    "type"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

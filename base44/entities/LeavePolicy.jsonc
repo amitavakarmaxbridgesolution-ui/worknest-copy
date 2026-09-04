@@ -1,0 +1,47 @@
+{
+  "name": "LeavePolicy",
+  "type": "object",
+  "properties": {
+    "leave_type_id": {
+      "type": "string"
+    },
+    "branch_id": {
+      "type": "string"
+    },
+    "accrual_rate": {
+      "type": "number"
+    },
+    "max_per_year": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "leave_type_id"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "Payslip",
+  "type": "object",
+  "properties": {
+    "payroll_run_id": {
+      "type": "string"
+    },
+    "payroll_period_id": {
+      "type": "string"
+    },
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "earnings": {
+      "type": "string"
+    },
+    "deductions": {
+      "type": "string"
+    },
+    "net_pay": {
+      "type": "number"
+    },
+    "snapshot": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "employee_email",
+    "net_pay"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

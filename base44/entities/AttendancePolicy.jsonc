@@ -1,0 +1,50 @@
+{
+  "name": "AttendancePolicy",
+  "type": "object",
+  "properties": {
+    "branch_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "late_grace_minutes": {
+      "type": "number"
+    },
+    "half_day_hours": {
+      "type": "number"
+    },
+    "overtime_threshold_hours": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

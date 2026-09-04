@@ -1,0 +1,68 @@
+{
+  "name": "Goal",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "kpi_target": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "number",
+      "default": 0
+    },
+    "progress": {
+      "type": "number",
+      "default": 0
+    },
+    "review_cycle_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "achieved",
+        "missed"
+      ],
+      "default": "not_started"
+    }
+  },
+  "required": [
+    "employee_email",
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

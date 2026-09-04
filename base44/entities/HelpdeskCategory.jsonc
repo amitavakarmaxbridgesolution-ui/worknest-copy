@@ -1,0 +1,45 @@
+{
+  "name": "HelpdeskCategory",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "department_id": {
+      "type": "string"
+    },
+    "sla_hours": {
+      "type": "number",
+      "default": 24
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

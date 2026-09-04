@@ -1,0 +1,95 @@
+{
+  "name": "TaxDeclaration",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "financial_year": {
+      "type": "string"
+    },
+    "regime": {
+      "type": "string",
+      "enum": [
+        "old",
+        "new"
+      ],
+      "default": "new"
+    },
+    "investment_80c": {
+      "type": "number",
+      "default": 0
+    },
+    "health_insurance_80d": {
+      "type": "number",
+      "default": 0
+    },
+    "hra_exemption": {
+      "type": "number",
+      "default": 0
+    },
+    "other_deductions": {
+      "type": "number",
+      "default": 0
+    },
+    "total_deductions": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "submitted",
+        "approved"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "employee_email",
+    "financial_year"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

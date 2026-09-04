@@ -1,0 +1,64 @@
+{
+  "name": "NotificationPreference",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "in_app_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "email_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "sms_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "push_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "categories": {
+      "type": "string",
+      "description": "JSON of category->enabled"
+    }
+  },
+  "required": [
+    "user_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "data.user_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

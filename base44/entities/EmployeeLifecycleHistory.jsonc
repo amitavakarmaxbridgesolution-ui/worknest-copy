@@ -1,0 +1,62 @@
+{
+  "name": "EmployeeLifecycleHistory",
+  "type": "object",
+  "properties": {
+    "employee_id": {
+      "type": "string"
+    },
+    "employee_email": {
+      "type": "string"
+    },
+    "event": {
+      "type": "string",
+      "enum": [
+        "Hired",
+        "Onboarding",
+        "Active",
+        "Probation",
+        "Confirmed",
+        "Transfer",
+        "Promotion",
+        "Resignation",
+        "Notice Period",
+        "Exit",
+        "Inactive"
+      ]
+    },
+    "from_status": {
+      "type": "string"
+    },
+    "to_status": {
+      "type": "string"
+    },
+    "effective_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "event"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

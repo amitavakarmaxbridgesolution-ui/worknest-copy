@@ -1,0 +1,84 @@
+{
+  "name": "Loan",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "loan_type": {
+      "type": "string",
+      "enum": [
+        "personal",
+        "vehicle",
+        "home",
+        "salary"
+      ]
+    },
+    "principal": {
+      "type": "number"
+    },
+    "interest_rate": {
+      "type": "number"
+    },
+    "tenure_months": {
+      "type": "number"
+    },
+    "emi_amount": {
+      "type": "number"
+    },
+    "disbursed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "outstanding": {
+      "type": "number"
+    },
+    "schedule": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "active",
+        "closed",
+        "rejected"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "employee_email",
+    "principal",
+    "tenure_months"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "JobRequisition",
+  "type": "object",
+  "properties": {
+    "department_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "headcount": {
+      "type": "number",
+      "default": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "open",
+        "closed"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

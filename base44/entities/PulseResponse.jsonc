@@ -1,0 +1,44 @@
+{
+  "name": "PulseResponse",
+  "type": "object",
+  "properties": {
+    "survey_id": {
+      "type": "string"
+    },
+    "employee_email": {
+      "type": "string"
+    },
+    "answers": {
+      "type": "string",
+      "description": "JSON of question->answer"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "survey_id",
+    "employee_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

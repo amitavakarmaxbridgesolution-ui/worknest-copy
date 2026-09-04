@@ -1,0 +1,41 @@
+{
+  "name": "MeetingActionItem",
+  "type": "object",
+  "properties": {
+    "meeting_id": {
+      "type": "string"
+    },
+    "assignee_email": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "done"
+      ],
+      "default": "open"
+    }
+  },
+  "required": [
+    "meeting_id",
+    "description"
+  ],
+  "rls": {
+    "read": {},
+    "create": {},
+    "update": {},
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

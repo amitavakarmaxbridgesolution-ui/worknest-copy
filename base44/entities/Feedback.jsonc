@@ -1,0 +1,56 @@
+{
+  "name": "Feedback",
+  "type": "object",
+  "properties": {
+    "review_id": {
+      "type": "string"
+    },
+    "from_employee_email": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "manager",
+        "peer",
+        "subordinate",
+        "stakeholder"
+      ]
+    },
+    "rating": {
+      "type": "number"
+    },
+    "comment": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "from_employee_email",
+    "type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

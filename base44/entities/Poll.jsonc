@@ -1,0 +1,46 @@
+{
+  "name": "Poll",
+  "type": "object",
+  "properties": {
+    "question": {
+      "type": "string"
+    },
+    "options": {
+      "type": "string",
+      "description": "JSON array of option strings"
+    },
+    "created_by": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "closed"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "question",
+    "options"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

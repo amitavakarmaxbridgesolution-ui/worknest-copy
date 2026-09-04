@@ -1,0 +1,66 @@
+{
+  "name": "Application",
+  "type": "object",
+  "properties": {
+    "job_post_id": {
+      "type": "string"
+    },
+    "candidate_id": {
+      "type": "string"
+    },
+    "applicant_email": {
+      "type": "string"
+    },
+    "applied_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "interviews": {
+      "type": "string"
+    },
+    "offer": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "applied",
+        "shortlisted",
+        "interview",
+        "selected",
+        "offer",
+        "hired",
+        "rejected"
+      ],
+      "default": "applied"
+    }
+  },
+  "required": [
+    "job_post_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

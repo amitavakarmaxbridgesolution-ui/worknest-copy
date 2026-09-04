@@ -1,0 +1,71 @@
+{
+  "name": "PerformanceReview",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "review_cycle_id": {
+      "type": "string"
+    },
+    "self_rating": {
+      "type": "number"
+    },
+    "manager_rating": {
+      "type": "number"
+    },
+    "final_rating": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "self",
+        "manager",
+        "acknowledged",
+        "finalized"
+      ],
+      "default": "self"
+    },
+    "acknowledgement_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "employee_email",
+    "review_cycle_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

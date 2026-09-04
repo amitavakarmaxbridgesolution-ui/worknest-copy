@@ -1,0 +1,64 @@
+{
+  "name": "OffboardingRequest",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "resignation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notice_end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "last_working_day": {
+      "type": "string",
+      "format": "date"
+    },
+    "exit_interview": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "initiated",
+        "in_progress",
+        "completed"
+      ],
+      "default": "initiated"
+    }
+  },
+  "required": [
+    "employee_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

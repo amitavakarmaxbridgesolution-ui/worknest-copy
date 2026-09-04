@@ -1,0 +1,59 @@
+{
+  "name": "LetterRequest",
+  "type": "object",
+  "properties": {
+    "template_id": {
+      "type": "string"
+    },
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "generated_body": {
+      "type": "string"
+    },
+    "requested_by": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "requested",
+        "generated",
+        "rejected"
+      ],
+      "default": "requested"
+    }
+  },
+  "required": [
+    "template_id",
+    "employee_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.employee_email": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "name": "HelpdeskTicket",
+  "type": "object",
+  "properties": {
+    "requester_email": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category_id": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "assigned",
+        "in_progress",
+        "pending",
+        "resolved",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "sla_due": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "escalated": {
+      "type": "boolean",
+      "default": false
+    },
+    "attachment_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "requester_email",
+    "subject"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.requester_email": "{{user.email}}"
+        },
+        {
+          "data.assigned_to": "{{user.email}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "name": "PayrollRun",
+  "type": "object",
+  "properties": {
+    "payroll_period_id": {
+      "type": "string"
+    },
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "gross": {
+      "type": "number"
+    },
+    "deductions": {
+      "type": "number"
+    },
+    "loan_deduction": {
+      "type": "number"
+    },
+    "advance_deduction": {
+      "type": "number"
+    },
+    "net_pay": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "calculated",
+        "approved",
+        "published",
+        "locked"
+      ],
+      "default": "calculated"
+    }
+  },
+  "required": [
+    "payroll_period_id",
+    "employee_email"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

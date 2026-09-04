@@ -1,0 +1,80 @@
+{
+  "name": "Attendance",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "check_in": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "check_out": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "present",
+        "absent",
+        "leave",
+        "late",
+        "half-day",
+        "overtime"
+      ],
+      "default": "present"
+    },
+    "shift_id": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "string"
+    },
+    "longitude": {
+      "type": "string"
+    },
+    "overtime_hours": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "employee_email",
+    "date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

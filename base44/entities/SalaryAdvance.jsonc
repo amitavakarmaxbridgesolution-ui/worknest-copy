@@ -1,0 +1,70 @@
+{
+  "name": "SalaryAdvance",
+  "type": "object",
+  "properties": {
+    "employee_email": {
+      "type": "string"
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "request_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "approval_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "recovery_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "recovered_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "recovered"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "employee_email",
+    "amount"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
