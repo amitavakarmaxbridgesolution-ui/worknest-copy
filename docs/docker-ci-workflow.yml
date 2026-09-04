@@ -1,3 +1,17 @@
+# GitHub Actions CI workflow (reference copy)
+
+This is the exact GitHub Actions workflow for this repository. It lives here as a reference file because the automation token used to push this repo does not have the `workflow` scope, which GitHub requires for pushing `.github/workflows/` files.
+
+**To enable CI:** copy this file's content to `.github/workflows/docker-ci.yml` in the GitHub web UI (Add file → Create new file), or push it with a token/PAT that has the `workflow` scope. It triggers on the first commit that contains it.
+
+**What it does:**
+1. **build** — builds both Docker images (`worknest-app`, `worknest-db`) with layer caching
+2. **verify** — boots the full `docker compose` stack, waits for the DB healthcheck and the app, then runs `docker/verify.sh` (all 13 checks, including the Base44 reverse-proxy checks) and prints the DB restore verification log
+3. **publish** — on pushes to `main`, pushes both images to GHCR (`ghcr.io/<owner>/worknest-app`, `ghcr.io/<owner>/worknest-db`)
+
+---
+
+```yaml
 name: Docker CI
 
 on:
@@ -122,3 +136,4 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.OWNER }}/worknest-db:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+```
