@@ -1,4 +1,4 @@
-# WorkNest — HR & Workforce Management Platform
+# MBSNest — HR & Workforce Management Platform
 
 Enterprise-grade human resource and workforce management application: core HR processes, organizational structure, and employee administration across multiple branch locations. Originally built on [Base44](https://base44.com); this repository contains the **complete exported source code**, **full SQL database backups**, and a **Docker deployment** with the app and database as separate images.
 
