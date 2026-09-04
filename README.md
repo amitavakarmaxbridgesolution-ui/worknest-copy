@@ -1,77 +1,74 @@
-# Base44 Project
+# WorkNest — HR & Workforce Management Platform
 
-Use this repository to run and edit the app locally, then publish changes back through Base44.
+Enterprise-grade human resource and workforce management application: core HR processes, organizational structure, and employee administration across multiple branch locations. Originally built on [Base44](https://base44.com); this repository contains the **complete exported source code**, **full SQL database backups**, and a **Docker deployment** with the app and database as separate images.
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+---
 
-## Prerequisites
+## Repository structure
 
-1. Clone the repository using the project's Git URL.
-2. Navigate to the project directory.
-3. Install dependencies: `npm install`.
-4. Install the Base44 CLI: `npm install -g base44@latest`.
+```
+.
+├── docker-compose.yml          # Runs the whole stack (app + db)
+├── docker/
+│   ├── app.Dockerfile          # Image 1: WorkNest app (node build → nginx)
+│   ├── db.Dockerfile           # Image 2: PostgreSQL initialized from worknest.sql
+│   ├── db-verify.sql           # Post-restore verification (runs on first DB boot)
+│   ├── nginx.conf              # SPA serving config
+│   └── verify.sh               # End-to-end verification of the running stack
+├── backups/
+│   ├── worknest.sql            # Full SQL backup: schema (86 tables) + 161 records (original WorkNest)
+│   ├── worknest-copy.sql       # Schema-only backup of the WorkNest (Copy) app (empty tables)
+│   └── README.md               # Backup details
+├── src/                        # Application source
+│   ├── pages/                  # All WorkNest modules (HR, payroll, attendance, helpdesk, …)
+│   ├── components/             # Shared UI components
+│   ├── api/                    # Base44 SDK client
+│   └── lib/, hooks/, utils/    # Support libraries
+├── base44/                     # Base44 entity definitions
+└── package.json                # Vite + React app
+```
 
-See the [Base44 CLI docs](https://docs.base44.com/developers/references/cli/get-started/overview) if you want to run Base44 commands directly.
+## The two Docker images
 
-## Run Locally
+| Image | Base | What it does |
+|---|---|---|
+| `worknest-app` | `node:20-alpine` → `nginx:1.27-alpine` | Multi-stage build: `npm ci` + `vite build`, then serves the production bundle with nginx (gzip, SPA fallback, asset caching) on port 80 |
+| `worknest-db` | `postgres:16-alpine` | On first boot, automatically restores `backups/worknest.sql` (full schema + all data) and runs a built-in verification that prints record counts to the container log |
 
-Run the full local development environment from the project root:
+## Quickstart
 
 ```bash
-base44 dev
+git clone https://github.com/amitavakarmaxbridgesolution-ui/worknest-copy.git
+cd worknest-copy
+
+docker compose up --build
 ```
 
-`base44 dev` starts the local Base44 development backend and, when this app is configured for it, also starts the frontend dev server for you. Use the frontend URL printed by the command.
+- **App:** http://localhost:8080
+- **DB:** `localhost:5432` — user `worknest`, password `worknest`, database `worknest`
+- The database image's init log prints a restore verification (tables + record counts) on first boot.
 
-For example, when the Base44 project config includes a `serveCommand`, `base44 dev` can launch the frontend too:
-
-```json5
-{
-  "site": {
-    "serveCommand": "npm run dev"
-  }
-}
-```
-
-In a Base44 project this lives in `base44/config.jsonc`.
-
-## Run Only The Frontend
-
-If you only want to work on the frontend against the hosted Base44 backend, run:
+### Thorough verification
 
 ```bash
-npm run dev
+./docker/verify.sh
 ```
 
-Open the local URL printed by Vite.
+Checks that the app serves (HTTP 200, SPA shell, JS/CSS bundles, route fallback) and that the database restored completely (86 tables, all key modules' data, referential integrity). Expected output ends with: `Verification complete: N passed, 0 failed.`
 
-## Use The Hosted Backend
+Verified locally during packaging (2026-09-04): `npm ci` + `vite build` succeed, production bundle serves correctly, and `worknest.sql` restores cleanly (86 tables / 161 records, zero orphaned references).
 
-For frontend-only development, create or update `.env.local` in the project root:
+## Architecture notes
 
-```bash
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=https://your-app.base44.app
-```
+- **Frontend:** Vite + React 18 SPA (all WorkNest modules: employees, payroll, attendance, leave, onboarding/offboarding, helpdesk, assets, performance, and more).
+- **Data layer:** the app's runtime data layer is the **Base44 managed backend** (`@base44/sdk`), which handles entities, auth, and functions. The `worknest-db` PostgreSQL image serves the **complete standalone SQL backup** — usable for inspection, reporting, migration to a self-hosted backend, or restoring into any SQL database.
+- **To restore the backup anywhere:** `backups/worknest.sql` is standard SQL (quoted identifiers, ANSI types) — `psql -U user -d db -f backups/worknest.sql` restores schema + data into PostgreSQL; it also loads cleanly into SQLite.
 
-`VITE_BASE44_APP_ID` identifies the Base44 app.
+## Database backup contents (worknest.sql)
 
-`VITE_BASE44_APP_BASE_URL` tells the Base44 Vite plugin where to send local `/api` requests. Point it at your deployed Base44 app URL when you want the local frontend to use the hosted backend.
+86 tables covering the full HR data model — Company, Branch, Employee, Department, Designation, JobGrade, PayrollRun, Payslip, SalaryStructure, Attendance, LeaveRequest, LeaveBalance, Shift, HelpdeskTicket, Asset, PerformanceReview, ReviewCycle, OnboardingTask, OffboardingRequest, TrainingCourse, and more — with 161 production records (20 employees across 3 branches: Mumbai HQ, Bangalore, Delhi).
 
-When you use `base44 dev`, the command injects the local Base44 values for you, so `.env.local` is mainly needed for frontend-only workflows.
+## CI / updates
 
-## Publish Your Changes
-
-After pushing your changes to git, open the Base44 dashboard and publish the app:
-
-```bash
-base44 dashboard open
-```
-
-## Docs & Support
-
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
-
-Base44 CLI command reference: [https://docs.base44.com/developers/references/cli/commands/introduction](https://docs.base44.com/developers/references/cli/commands/introduction)
-
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+- Source mirrors the original WorkNest app (verified byte-identical on 2026-09-04).
+- To refresh: re-export the code via the Base44 export API, re-run the SQL dump, commit and push.

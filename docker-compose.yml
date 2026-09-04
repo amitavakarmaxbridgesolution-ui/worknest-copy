@@ -1,0 +1,47 @@
+# WorkNest — application + database, containerized.
+# App  : multi-stage build (node:20-alpine -> nginx:1.27-alpine), serves the WorkNest frontend on :80
+# DB   : postgres:16-alpine, auto-restored from backups/worknest.sql on first boot
+#
+#   docker compose up --build
+#     app -> http://localhost:8080
+#     db  -> localhost:5432 (worknest / worknest)
+
+name: worknest
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    image: worknest-app:latest
+    container_name: worknest-app
+    ports:
+      - "8080:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    build:
+      context: .
+      dockerfile: docker/db.Dockerfile
+    image: worknest-db:latest
+    container_name: worknest-db
+    environment:
+      POSTGRES_USER: worknest
+      POSTGRES_PASSWORD: worknest
+      POSTGRES_DB: worknest
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U worknest -d worknest"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  pgdata:
