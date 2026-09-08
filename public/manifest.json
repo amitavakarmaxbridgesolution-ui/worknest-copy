@@ -1,0 +1,16 @@
+{
+  "name": "MBSNest — HR & Workforce Management",
+  "short_name": "MBSNest",
+  "description": "Enterprise-grade human resource and workforce management platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "https://base44.com/logo_v2.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
