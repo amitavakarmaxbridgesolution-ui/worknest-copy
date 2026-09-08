@@ -3,7 +3,8 @@
 .github
 node_modules
 dist
-backups
+backups/*
+!backups/worknest.sql
 *.log
 .env
 .env.*
