@@ -19,6 +19,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+// The primary admin account is protected at the app layer: its role can
+// never be changed, and it can never be deactivated or deleted — not even
+// by another admin. This guards against accidental or malicious lockout
+// of the last admin account.
+const PROTECTED_EMAILS = ["amitava.kar@maxbridgesolution.com"];
+
 export default function Users() {
   const { toast } = useToast();
   const { user: currentUser } = useAuth();
@@ -56,8 +62,18 @@ export default function Users() {
     }
   };
 
+  const isProtected = (u) => PROTECTED_EMAILS.includes(u?.email?.toLowerCase());
+
   const changeRole = async (targetUser, newRole) => {
     if (newRole === targetUser.role) return;
+    if (isProtected(targetUser)) {
+      toast({
+        title: "Protected account",
+        description: "This account's role cannot be changed.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (targetUser.id === currentUser?.id) {
       toast({
         title: "Can't change your own role",
@@ -79,6 +95,14 @@ export default function Users() {
   };
 
   const toggleActive = async (targetUser) => {
+    if (isProtected(targetUser)) {
+      toast({
+        title: "Protected account",
+        description: "This account cannot be deactivated.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (targetUser.id === currentUser?.id) {
       toast({
         title: "Can't deactivate your own account",
@@ -106,6 +130,15 @@ export default function Users() {
   const confirmDelete = async () => {
     if (!pendingDelete) return;
     const targetUser = pendingDelete;
+    if (isProtected(targetUser)) {
+      setPendingDelete(null);
+      toast({
+        title: "Protected account",
+        description: "This account cannot be deleted.",
+        variant: "destructive",
+      });
+      return;
+    }
     setUpdatingId(targetUser.id);
     try {
       await base44.entities.User.delete(targetUser.id);
@@ -126,7 +159,7 @@ export default function Users() {
       key: "role",
       label: "Role",
       render: (r) =>
-        isAdmin ? (
+        isAdmin && !isProtected(r) ? (
           <Select
             value={r.role || "user"}
             disabled={updatingId === r.id}
@@ -158,6 +191,13 @@ export default function Users() {
             render: (r) => {
               const isSelf = r.id === currentUser?.id;
               const isInactive = r.is_active === false;
+              if (isProtected(r)) {
+                return (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1" title="Protected system account — cannot be modified">
+                    <ShieldCheck className="h-3.5 w-3.5" /> Protected
+                  </span>
+                );
+              }
               return (
                 <div className="flex items-center gap-1.5">
                   <Button
