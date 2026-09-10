@@ -48,14 +48,6 @@ jobs:
             echo "Building and starting Worknest containers..."
             docker-compose up -d --build --force-recreate --remove-orphans
 
-            echo "Waiting for application startup..."
-            sleep 10
-
-            echo "Container status:"
-            docker-compose ps
-
-            echo "Application logs (last 30 lines):"
-            docker-compose logs --tail=30
 
             echo "======================================"
             echo "Deployment completed successfully!"
