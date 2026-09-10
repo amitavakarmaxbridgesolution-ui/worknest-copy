@@ -36,48 +36,45 @@ jobs:
 
             cd "$PROJECT_DIR"
 
-            echo "Current Git status:"
-            git status
-
             echo "Fetching latest code..."
             git fetch origin main
 
             echo "Resetting to latest main branch..."
             git reset --hard origin/main
 
-            echo "======================================"
-            echo "Building Docker images..."
-            echo "======================================"
+            echo "Checking current containers"
+
+            docker ps -a
+
+            echo "Stopping old Worknest containers"
+
+            docker stop worknest-app 2>/dev/null || true
+            docker stop worknest-db 2>/dev/null || true
+
+            echo "Removing old Worknest containers"
+
+            docker rm worknest-app 2>/dev/null || true
+            docker rm worknest-db 2>/dev/null || true
+
+            echo "Removing Compose project containers"
+
+            docker ps -aq \
+              --filter "label=com.docker.compose.project=worknest-copy" \
+              | xargs -r docker rm -f || true
+
+            echo "Building Docker images"
 
             docker-compose build
 
-            echo "======================================"
-            echo "Removing old containers safely..."
-            echo "======================================"
-
-            docker-compose rm -sf || true
-
-            echo "======================================"
-            echo "Starting new containers..."
-            echo "======================================"
+            echo "Starting containers"
 
             docker-compose up -d
 
             echo "Waiting for application startup..."
             sleep 10
 
-            echo "======================================"
-            echo "Container status:"
-            echo "======================================"
+            echo "Container status"
 
             docker-compose ps
 
-            echo "======================================"
-            echo "Recent application logs:"
-            echo "======================================"
-
-            docker-compose logs --tail=30
-
-            echo "======================================"
             echo "Deployment completed successfully!"
-            echo "======================================"
