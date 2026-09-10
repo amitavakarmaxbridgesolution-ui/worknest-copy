@@ -94,6 +94,33 @@ export const AuthProvider = ({ children }) => {
       // Now check if the user is authenticated
       setIsLoadingAuth(true);
       const currentUser = await base44.auth.me();
+
+      // Soft-deactivation: Base44's own auth API has no concept of a
+      // per-app "disabled" user, so an admin-deactivated account (see
+      // Users.jsx) still holds a valid token there. We enforce the
+      // deactivation ourselves at the app layer: if the User record has
+      // is_active === false, treat this session as unauthenticated, clear
+      // the local token so a refresh doesn't silently let them back in,
+      // and surface a dedicated "account_deactivated" error instead of the
+      // generic auth_required screen.
+      if (currentUser?.is_active === false) {
+        setUser(null);
+        setIsAuthenticated(false);
+        setIsLoadingAuth(false);
+        setAuthChecked(true);
+        setAuthError({
+          type: 'account_deactivated',
+          message: 'This account has been deactivated by an administrator.'
+        });
+        try {
+          window.localStorage.removeItem('base44_access_token');
+          window.localStorage.removeItem('token');
+        } catch (e) {
+          console.error('Failed to clear auth token for deactivated account:', e);
+        }
+        return;
+      }
+
       setUser(currentUser);
       setIsAuthenticated(true);
       setIsLoadingAuth(false);
