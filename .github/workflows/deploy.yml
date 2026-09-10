@@ -39,15 +39,44 @@ jobs:
             echo "Current Git status:"
             git status
 
-            echo "Fetching latest code from GitHub..."
+            echo "Fetching latest code..."
             git fetch origin main
 
             echo "Resetting to latest main branch..."
             git reset --hard origin/main
 
-            echo "Building and starting Worknest containers..."
-            docker-compose up -d --build --force-recreate --remove-orphans
+            echo "======================================"
+            echo "Building Docker images..."
+            echo "======================================"
 
+            docker-compose build
+
+            echo "======================================"
+            echo "Removing old containers safely..."
+            echo "======================================"
+
+            docker-compose rm -sf || true
+
+            echo "======================================"
+            echo "Starting new containers..."
+            echo "======================================"
+
+            docker-compose up -d
+
+            echo "Waiting for application startup..."
+            sleep 10
+
+            echo "======================================"
+            echo "Container status:"
+            echo "======================================"
+
+            docker-compose ps
+
+            echo "======================================"
+            echo "Recent application logs:"
+            echo "======================================"
+
+            docker-compose logs --tail=30
 
             echo "======================================"
             echo "Deployment completed successfully!"
