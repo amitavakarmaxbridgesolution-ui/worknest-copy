@@ -28,28 +28,35 @@ jobs:
           script: |
             set -e
 
+            PROJECT_DIR="$HOME/public_html/worknest-copy"
+
             echo "======================================"
             echo "Starting Worknest deployment"
             echo "======================================"
 
-            cd ~/public_html/worknest-copy
+            cd "$PROJECT_DIR"
 
             echo "Current Git status:"
             git status
 
-            echo "Fetching latest code..."
+            echo "Fetching latest code from GitHub..."
             git fetch origin main
 
             echo "Resetting to latest main branch..."
             git reset --hard origin/main
 
-            echo "Building and starting containers..."
+            echo "Building and starting Worknest containers..."
             docker-compose up -d --build --force-recreate --remove-orphans
 
-            echo "Waiting for containers..."
+            echo "Waiting for application startup..."
             sleep 10
 
             echo "Container status:"
-            docker compose ps
+            docker-compose ps
 
+            echo "Application logs (last 30 lines):"
+            docker-compose logs --tail=30
+
+            echo "======================================"
             echo "Deployment completed successfully!"
+            echo "======================================"
