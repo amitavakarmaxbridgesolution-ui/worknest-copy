@@ -117,13 +117,26 @@ export const AuthProvider = ({ children }) => {
   const logout = (shouldRedirect = true) => {
     setUser(null);
     setIsAuthenticated(false);
-    
+
+    // NOTE: base44.auth.logout() always navigates the browser to
+    // `${appBaseUrl}/api/apps/auth/logout`, and that endpoint always
+    // redirects to Base44's own domain (`/`) regardless of the from_url
+    // query param passed to it — confirmed by testing the endpoint directly.
+    // For a self-hosted deployment this bounces the user to app.base44.com
+    // instead of back to this site's /login. This app authenticates via a
+    // Bearer token read from localStorage (set in base44Client/app-params),
+    // not Base44's HttpOnly session cookie, so clearing that token locally
+    // and navigating to our own /login is sufficient and keeps the user on
+    // this domain.
+    try {
+      window.localStorage.removeItem('base44_access_token');
+      window.localStorage.removeItem('token');
+    } catch (e) {
+      console.error('Failed to clear auth token during logout:', e);
+    }
+
     if (shouldRedirect) {
-      // Use the SDK's logout method which handles token cleanup and redirect
-      base44.auth.logout(window.location.href);
-    } else {
-      // Just remove the token without redirect
-      base44.auth.logout();
+      window.location.href = '/login';
     }
   };
 
