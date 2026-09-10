@@ -1,13 +1,4 @@
-# WorkNest — application + database, containerized.
-# App  : multi-stage build (node:20-alpine -> nginx:1.27-alpine), serves the WorkNest frontend on :80
-#        and reverse-proxies /api + /ws-user-apps to the real Base44 backend (see docker/nginx.conf.template)
-# DB   : postgres:16-alpine, auto-restored from backups/worknest.sql on first boot
-#
-#   docker compose up --build
-#     app -> http://localhost:8080
-#     db  -> localhost:5432 (worknest / worknest)
-
-name: worknest
+version: "3.8"
 
 services:
   app:
@@ -24,7 +15,7 @@ services:
     image: worknest-app:latest
     container_name: worknest-app
     ports:
-      - "8080:80"
+      - "3038:80"
     depends_on:
       db:
         condition: service_healthy
@@ -41,7 +32,7 @@ services:
       POSTGRES_PASSWORD: worknest
       POSTGRES_DB: worknest
     ports:
-      - "5432:5432"
+      - "3037:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
