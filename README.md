@@ -1,4 +1,4 @@
-# MBSNest — HR & Workforce Management Platform
+# MBS-WorkNest — HR & Workforce Management Platform
 
 Enterprise-grade human resource and workforce management application: core HR processes, organizational structure, and employee administration across multiple branch locations. Originally built on [Base44](https://base44.com); this repository contains the **complete exported source code**, **full SQL database backups**, and a **Docker deployment** with the app and database as separate images.
 
@@ -101,6 +101,7 @@ That means the container is still running the **old image**. `docker compose up 
 > Note: self-hosting the frontend still relies on Base44's managed backend for auth/entities — the reverse proxy restores that connection. The PostgreSQL image remains a standalone data copy (see Architecture notes).
 
 ## CI / updates
+Auto update using GitHub code build 
 
 - **GitHub Actions:** a CI workflow (build both images → boot the stack → run `docker/verify.sh` → publish to GHCR) is included as a reference copy at [`docs/docker-ci-workflow.yml`](docs/docker-ci-workflow.yml). Copy its contents to `.github/workflows/docker-ci.yml` via the GitHub UI (or push with a token that has the `workflow` scope) to enable it.
 - Source mirrors the original WorkNest app (verified byte-identical on 2026-09-04).
