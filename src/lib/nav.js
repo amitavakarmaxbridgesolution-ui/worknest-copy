@@ -21,6 +21,7 @@ export const navItems = [
       { label: "Lifecycle History", path: "/lifecycle", icon: "History", roles: ["admin"] },
       { label: "Onboarding", path: "/onboarding", icon: "UserPlus", roles: ["admin", "user"] },
       { label: "Offboarding", path: "/offboarding", icon: "LogOut", roles: ["admin", "user"] },
+      { label: "Branches", path: "/branches", icon: "Building2", roles: ["admin"] },
     ],
   },
   {
