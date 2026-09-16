@@ -22,6 +22,11 @@ export const navItems = [
       { label: "Onboarding", path: "/onboarding", icon: "UserPlus", roles: ["admin", "user"] },
       { label: "Offboarding", path: "/offboarding", icon: "LogOut", roles: ["admin", "user"] },
       { label: "Branches", path: "/branches", icon: "Building2", roles: ["admin"] },
+      { label: "Companies", path: "/company", icon: "Building2", roles: ["admin"] },
+      { label: "Departments", path: "/departments", icon: "Network", roles: ["admin"] },
+      { label: "Teams", path: "/teams", icon: "Users", roles: ["admin"] },
+      { label: "Designations", path: "/designations", icon: "BadgeCheck", roles: ["admin"] },
+      { label: "Job Grades", path: "/job-grades", icon: "Trophy", roles: ["admin"] },
     ],
   },
   {
