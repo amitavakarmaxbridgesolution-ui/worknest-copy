@@ -55,7 +55,7 @@ export default function Users() {
     const role = prompt("Role (admin or user):", "user") || "user";
     try {
       await base44.users.inviteUser(email, role);
-      toast({ title: "Invite sent", description: `Invitation emailed to ${email}` });
+      toast({ title: "Invite sent", description: `${email} should open the invitation email, then use "Set up your password" on the login page.` });
       load();
     } catch (e) {
       toast({ title: "Invite failed", description: e.message, variant: "destructive" });

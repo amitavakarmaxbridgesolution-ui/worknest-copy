@@ -127,6 +127,16 @@ export default function Login() {
           )}
         </Button>
       </form>
+
+      <p className="text-center text-sm text-muted-foreground mt-6">
+        Invited to the app?{" "}
+        <Link
+          to={"/set-password" + (returnTo !== "/" ? "?returnTo=" + encodeURIComponent(returnTo) : "")}
+          className="text-primary font-medium hover:underline"
+        >
+          Set up your password
+        </Link>
+      </p>
     </AuthLayout>
   );
 }
