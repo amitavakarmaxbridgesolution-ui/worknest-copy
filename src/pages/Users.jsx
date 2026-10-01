@@ -55,7 +55,22 @@ export default function Users() {
     const role = prompt("Role (admin or user):", "user") || "user";
     try {
       await base44.users.inviteUser(email, role);
-      toast({ title: "Invite sent", description: `${email} should open the invitation email, then use "Set up your password" on the login page.` });
+      // The platform's own invite email just points the invitee at the
+      // generic login screen with no context. Immediately follow up with a
+      // password-set email tied to this address so they get a single,
+      // one-step "choose your password" link (/reset-password?token=...)
+      // instead of having to notice the account already exists and go
+      // looking for "Set up your password" themselves.
+      try {
+        await base44.auth.resetPasswordRequest(email);
+      } catch (_) {
+        // Non-fatal: the invitee can still trigger this themselves from
+        // "Set up your password" on the login page.
+      }
+      toast({
+        title: "Invite sent",
+        description: `${email} will get an email to set their password for ${role} access and log in.`,
+      });
       load();
     } catch (e) {
       toast({ title: "Invite failed", description: e.message, variant: "destructive" });

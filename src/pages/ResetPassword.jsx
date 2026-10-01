@@ -4,12 +4,31 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock, Loader2, AlertTriangle } from "lucide-react";
+import { Lock, Loader2, AlertTriangle, Mail } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+
+// The reset/invite token is a JWT whose payload typically carries the
+// account's email. We only ever read it client-side to show the invitee
+// which address they're setting a password for — the server independently
+// validates the token's signature when resetPassword() is called, so a
+// failed or missing decode here is purely cosmetic and never a security
+// concern.
+function decodeEmailFromToken(token) {
+  try {
+    const payload = token.split(".")[1];
+    if (!payload) return null;
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const json = JSON.parse(decodeURIComponent(escape(atob(base64))));
+    return json.email || json.user_email || json.sub || null;
+  } catch {
+    return null;
+  }
+}
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const resetToken = searchParams.get("token");
+  const inviteeEmail = resetToken ? decodeEmailFromToken(resetToken) : null;
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -21,6 +40,10 @@ export default function ResetPassword() {
     setError("");
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setError("Password must be at least 8 characters");
       return;
     }
     setLoading(true);
@@ -56,8 +79,8 @@ export default function ResetPassword() {
   return (
     <AuthLayout
       icon={Lock}
-      title="New password"
-      subtitle="Enter your new password below"
+      title={inviteeEmail ? "Set your password" : "New password"}
+      subtitle={inviteeEmail ? "Choose a password to activate your account" : "Enter your new password below"}
     >
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
@@ -65,8 +88,23 @@ export default function ResetPassword() {
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
+        {inviteeEmail && (
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
+              <Input
+                id="email"
+                type="email"
+                value={inviteeEmail}
+                disabled
+                className="pl-10 h-12 bg-muted text-muted-foreground"
+              />
+            </div>
+          </div>
+        )}
         <div className="space-y-2">
-          <Label htmlFor="password">New Password</Label>
+          <Label htmlFor="password">{inviteeEmail ? "Password" : "New Password"}</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -74,7 +112,7 @@ export default function ResetPassword() {
               type="password"
               autoComplete="new-password"
               autoFocus
-              placeholder="••••••••"
+              placeholder="At least 8 characters"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="pl-10 h-12"
@@ -83,7 +121,7 @@ export default function ResetPassword() {
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
+          <Label htmlFor="confirm">{inviteeEmail ? "Retype Password" : "Confirm Password"}</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -102,8 +140,10 @@ export default function ResetPassword() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Resetting...
+              Setting up...
             </>
+          ) : inviteeEmail ? (
+            "Set password & log in"
           ) : (
             "Reset password"
           )}

@@ -147,4 +147,9 @@ describe("Login page invite entry point", () => {
     const link = screen.getByRole("link", { name: /Set up your password/i });
     expect(link).toHaveAttribute("href", "/set-password");
   });
+
+  it("prefills the email when the link carries ?email=", () => {
+    renderPage(<Login />, ["/login?email=invitee@example.com"]);
+    expect(screen.getByLabelText(/Email/i)).toHaveValue("invitee@example.com");
+  });
 });
